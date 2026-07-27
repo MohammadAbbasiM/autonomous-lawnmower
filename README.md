@@ -1,6 +1,6 @@
 # Autonomous Robotic Lawn Mower
 
-An autonomous robotic lawn mower developed by students at Iran University of Science and Technology (IUST).
+An open-source autonomous robotic lawn mower project developed at Iran University of Science and Technology (IUST).
 
 ## Overview
 
@@ -8,7 +8,7 @@ This project aims to develop a low-cost autonomous lawn mower capable of reliabl
 
 The long-term goal is to build a robust robotic platform that can operate in real-world gardens and lawns with minimal human intervention.
 
-## Planned System
+## System Architecture
 
 - NVIDIA Jetson
 - LiDAR
@@ -17,8 +17,23 @@ The long-term goal is to build a robust robotic platform that can operate in rea
 - IMU
 - Differential Drive Platform
 - ROS 2
+  
+```
+RGB Camera
+      \
+LiDAR --> Sensor Fusion --> SLAM --> Navigation --> Motors
+      /
+GNSS + IMU
+```
 
 ## Roadmap
+
+## Market Research
+
+- [x] Existing products survey
+- [x] Sensor comparison
+- [x] Price comparison
+- [ ] Product requirements definition
 
 ### Phase 1 – Simulation
 - [x] Select the SLAM framework
