@@ -28,7 +28,7 @@ GNSS + IMU
 
 ## Roadmap
 
-## Market Research
+### Market Research
 
 - [x] Existing products survey
 - [x] Sensor comparison
