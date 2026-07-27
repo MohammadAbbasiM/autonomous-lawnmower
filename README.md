@@ -21,7 +21,7 @@ The long-term goal is to build a robust robotic platform that can operate in rea
 ## Roadmap
 
 ### Phase 1 – Simulation
-- [ ] Select the SLAM framework
+- [x] Select the SLAM framework
 - [ ] Build a ROS2 simulation environment
 - [ ] Evaluate the M3DGR dataset
 - [ ] Benchmark localization accuracy
