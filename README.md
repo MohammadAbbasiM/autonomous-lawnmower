@@ -33,3 +33,62 @@ The software pipeline decouples high-level autonomy from low-level actuation usi
 [LiDAR] + [RGB Camera] ────> [SLAM / Visual-LiDAR Odometry] ───┤     (Boustrophedon Coverage    │
                                                                │      & Obstacle Avoidance)     ├──> [Gazebo Sim]
 [GNSS Receiver] ───────────> [Global EKF (map -> odom)] ───────┘                                └──> [Physical Hardware]
+```
+
+---
+
+## Repository Structure
+
+```text
+autonomous-lawnmower-IUST/
+├── docs/                       # System specifications, sensor survey & PRD
+│   └── product_requirements.md # System & Software Requirements Document
+├── lawnmower_description/      # Robot URDF/Xacro, sensor frames & meshes
+├── lawnmower_gazebo/           # Gazebo simulation worlds, launch files & plugins
+├── lawnmower_localization/     # Dual-EKF configs (robot_localization) & SLAM integration
+├── lawnmower_navigation/       # Nav2 stack & Fields2Cover coverage path planning
+└── README.md
+```
+
+---
+
+## Roadmap
+
+### Phase 1 – Research & System Specification
+- [x] Existing commercial products survey
+- [x] Sensor suite & compute price/performance comparison
+- [x] Select the core SLAM framework
+- [x] [Product & Software Requirements Definition (PRD)](docs/product_requirements.md)
+
+### Phase 2 – Dataset Benchmarking & Localization
+- [ ] Evaluate the selected SLAM framework on the **M3DGR** outdoor lawn dataset
+- [ ] Benchmark localization accuracy (ATE / RPE metrics using `evo`)
+- [ ] Configure Dual-EKF sensor fusion (`robot_localization`) for IMU, Wheel Odometry, and GNSS
+
+### Phase 3 – Simulation & Autonomous Coverage
+- [ ] Build the differential drive robot URDF and Gazebo lawn environment
+- [ ] Integrate simulated sensors with realistic Gaussian noise profiles
+- [ ] Implement full-area lawn coverage planning (**Nav2** + **Fields2Cover**)
+- [ ] Validate dynamic obstacle avoidance during active coverage missions
+
+### Phase 4 – Edge Readiness & Profiling (NVIDIA Jetson Target)
+- [ ] Containerize the autonomy stack using Docker (ARM64 / L4T compatible)
+- [ ] Profile CPU, GPU, and RAM utilization against Jetson Orin Nano compute budgets
+- [ ] Hardware-in-the-Loop (HIL) / Physical platform integration *(Optional Future Extension)*
+
+---
+
+## Technologies & Tools
+
+- **Core:** C++, Python, ROS 2
+- **Simulation:** Gazebo, RViz2, URDF/Xacro
+- **Localization & Mapping:** LiDAR-Inertial SLAM, `robot_localization` (Dual-EKF), `navsat_transform`
+- **Navigation & Planning:** Nav2, Fields2Cover (Coverage Path Planning)
+- **Perception & Compute:** OpenCV, PCL (Point Cloud Library), CUDA, Docker
+- **Benchmarking:** `evo` (Trajectory Evaluation), M3DGR Dataset
+
+---
+
+## Status
+
+🚧 **Active Development** — Currently benchmarking SLAM localization on the M3DGR dataset and setting up the Gazebo simulation environment.
