@@ -1,0 +1,241 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="autonomous_lawnmower">
+
+  <!-- ==================== MATERIALS ==================== -->
+  <material name="green"><color rgba="0.1 0.6 0.2 1.0"/></material>
+  <material name="black"><color rgba="0.1 0.1 0.1 1.0"/></material>
+  <material name="grey"><color rgba="0.5 0.5 0.5 1.0"/></material>
+  <material name="blue"><color rgba="0.1 0.3 0.8 1.0"/></material>
+
+  <!-- ==================== BASE FOOTPRINT & CHASSIS ==================== -->
+  <link name="base_footprint"/>
+
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.10" rpy="0 0 0"/>
+  </joint>
+
+  <link name="base_link">
+    <visual>
+      <geometry><box size="0.65 0.45 0.15"/></geometry>
+      <material name="green"/>
+    </visual>
+    <collision>
+      <geometry><box size="0.65 0.45 0.15"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="12.0"/>
+      <inertia ixx="0.225" ixy="0" ixz="0" iyy="0.445" iyz="0" izz="0.625"/>
+    </inertial>
+  </link>
+
+  <!-- Cutting Deck (Visual Representation) -->
+  <link name="cutting_deck_link">
+    <visual>
+      <geometry><cylinder radius="0.14" length="0.02"/></geometry>
+      <material name="grey"/>
+    </visual>
+  </link>
+  <joint name="cutting_deck_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="cutting_deck_link"/>
+    <origin xyz="0.0 0.0 -0.08" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ==================== DRIVE WHEELS ==================== -->
+  <xacro:macro name="drive_wheel" params="prefix y_reflect">
+    <link name="${prefix}_wheel">
+      <visual>
+        <geometry><cylinder radius="0.10" length="0.05"/></geometry>
+        <material name="black"/>
+      </visual>
+      <collision>
+        <geometry><cylinder radius="0.10" length="0.05"/></geometry>
+      </collision>
+      <inertial>
+        <mass value="1.5"/>
+        <inertia ixx="0.004" ixy="0" ixz="0" iyy="0.004" iyz="0" izz="0.0075"/>
+      </inertial>
+    </link>
+
+    <joint name="${prefix}_wheel_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${prefix}_wheel"/>
+      <origin xyz="-0.15 ${y_reflect * 0.25} 0.0" rpy="-1.5708 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:drive_wheel prefix="left" y_reflect="1"/>
+  <xacro:drive_wheel prefix="right" y_reflect="-1"/>
+
+  <!-- ==================== FRONT CASTER WHEEL ==================== -->
+  <link name="front_caster">
+    <visual>
+      <geometry><sphere radius="0.05"/></geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <geometry><sphere radius="0.05"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.0005" ixy="0" ixz="0" iyy="0.0005" iyz="0" izz="0.0005"/>
+    </inertial>
+  </link>
+
+  <joint name="caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_caster"/>
+    <origin xyz="0.22 0.0 -0.05" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ==================== SENSORS ==================== -->
+  <!-- 1. LiDAR -->
+  <link name="laser_frame">
+    <visual>
+      <geometry><cylinder radius="0.04" length="0.05"/></geometry>
+      <material name="blue"/>
+    </visual>
+  </link>
+  <joint name="laser_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="laser_frame"/>
+    <origin xyz="0.15 0 0.10" rpy="0 0 0"/>
+  </joint>
+
+  <!-- 2. IMU -->
+  <link name="imu_link"/>
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- 3. GNSS / GPS -->
+  <link name="gps_link"/>
+  <joint name="gps_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="gps_link"/>
+    <origin xyz="-0.15 0 0.10" rpy="0 0 0"/>
+  </joint>
+
+  <!-- 4. RGB Camera -->
+  <link name="camera_link">
+    <visual>
+      <geometry><box size="0.02 0.08 0.03"/></geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="0.32 0 0.05" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ==================== GAZEBO PLUGINS & COLORS ==================== -->
+  <gazebo reference="base_link"><material>Gazebo/Green</material></gazebo>
+  <gazebo reference="left_wheel"><material>Gazebo/FlatBlack</material></gazebo>
+  <gazebo reference="right_wheel"><material>Gazebo/FlatBlack</material></gazebo>
+  <gazebo reference="front_caster">
+    <material>Gazebo/Grey</material>
+    <mu1 value="0.001"/>
+    <mu2 value="0.001"/>
+  </gazebo>
+
+  <!-- Differential Drive Controller Plugin -->
+  <gazebo>
+    <plugin name="diff_drive" filename="libgazebo_ros_diff_drive.so">
+      <ros><namespace>/</namespace></ros>
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
+      <wheel_separation>0.50</wheel_separation>
+      <wheel_diameter>0.20</wheel_diameter>
+      <max_wheel_torque>20</max_wheel_torque>
+      <max_wheel_acceleration>1.0</max_wheel_acceleration>
+      <publish_odom>true</publish_odom>
+      <publish_odom_tf>true</publish_odom_tf>
+      <publish_wheel_tf>true</publish_wheel_tf>
+      <odometry_frame>odom</odometry_frame>
+      <robot_base_frame>base_footprint</robot_base_frame>
+    </plugin>
+  </gazebo>
+
+  <!-- LiDAR Sensor Plugin -->
+  <gazebo reference="laser_frame">
+    <sensor name="lidar" type="ray">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>10</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <min_angle>-3.14159</min_angle>
+            <max_angle>3.14159</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.30</min>
+          <max>15.0</max>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="scan" filename="libgazebo_ros_ray_sensor.so">
+        <ros><remapping>~/out:=scan</remapping></ros>
+        <output_type>sensor_msgs/LaserScan</output_type>
+        <frame_name>laser_frame</frame_name>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <!-- IMU Sensor Plugin -->
+  <gazebo reference="imu_link">
+    <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <plugin name="imu_plugin" filename="libgazebo_ros_imu_sensor.so">
+        <ros><remapping>~/out:=imu/data</remapping></ros>
+        <initial_orientation_as_reference>false</initial_orientation_as_reference>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <!-- GPS Sensor Plugin -->
+  <gazebo reference="gps_link">
+    <sensor name="gps_sensor" type="gps">
+      <always_on>true</always_on>
+      <update_rate>5.0</update_rate>
+      <gps>
+        <position_sensing>
+          <horizontal><noise type="gaussian"><mean>0.0</mean><stddev>0.05</stddev></noise></horizontal>
+          <vertical><noise type="gaussian"><mean>0.0</mean><stddev>0.10</stddev></noise></vertical>
+        </position_sensing>
+      </gps>
+      <plugin name="gps_plugin" filename="libgazebo_ros_gps_sensor.so">
+        <ros><remapping>~/out:=gps/fix</remapping></ros>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <!-- RGB Camera Plugin -->
+  <gazebo reference="camera_link">
+    <sensor name="camera" type="camera">
+      <update_rate>30.0</update_rate>
+      <camera name="front_camera">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image><width>640</width><height>480</height><format>R8G8B8</format></image>
+        <clip><near>0.05</near><far>20.0</far></clip>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <frame_name>camera_link</frame_name>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+</robot>

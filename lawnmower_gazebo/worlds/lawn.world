@@ -1,0 +1,97 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="lawn_world">
+    <!-- نور خورشید -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- صفحه زمین -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- صفحه چمنزار (۱۰ در ۱۰ متر) -->
+    <model name="grass_patch">
+      <static>true</static>
+      <link name="link">
+        <visual name="visual">
+          <pose>0 0 0.005 0 0 0</pose>
+          <geometry><box><size>10 10 0.01</size></box></geometry>
+          <material>
+            <ambient>0.15 0.45 0.15 1</ambient>
+            <diffuse>0.15 0.45 0.15 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- دیوارهای اطراف حیاط (مرز چمنزار برای تشخیص با LiDAR) -->
+    <model name="garden_walls">
+      <static>true</static>
+      <link name="north_wall">
+        <pose>5 0 0.5 0 0 0</pose>
+        <collision name="collision"><geometry><box><size>0.2 10.2 1.0</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.2 10.2 1.0</size></box></geometry>
+          <material><ambient>0.5 0.35 0.2 1</ambient><diffuse>0.5 0.35 0.2 1</diffuse></material>
+        </visual>
+      </link>
+      <link name="south_wall">
+        <pose>-5 0 0.5 0 0 0</pose>
+        <collision name="collision"><geometry><box><size>0.2 10.2 1.0</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.2 10.2 1.0</size></box></geometry>
+          <material><ambient>0.5 0.35 0.2 1</ambient><diffuse>0.5 0.35 0.2 1</diffuse></material>
+        </visual>
+      </link>
+      <link name="east_wall">
+        <pose>0 -5 0.5 0 0 0</pose>
+        <collision name="collision"><geometry><box><size>10.0 0.2 1.0</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>10.0 0.2 1.0</size></box></geometry>
+          <material><ambient>0.5 0.35 0.2 1</ambient><diffuse>0.5 0.35 0.2 1</diffuse></material>
+        </visual>
+      </link>
+      <link name="west_wall">
+        <pose>0 5 0.5 0 0 0</pose>
+        <collision name="collision"><geometry><box><size>10.0 0.2 1.0</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>10.0 0.2 1.0</size></box></geometry>
+          <material><ambient>0.5 0.35 0.2 1</ambient><diffuse>0.5 0.35 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- موانع داخل حیاط (تنه درختان / موانع ثابت) -->
+    <model name="tree_obstacle_1">
+      <static>true</static>
+      <pose>2.5 2.0 0.6 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><cylinder><radius>0.3</radius><length>1.2</length></cylinder></geometry></collision>
+        <visual name="visual"><geometry><cylinder><radius>0.3</radius><length>1.2</length></cylinder></geometry>
+          <material><ambient>0.4 0.25 0.1 1</ambient><diffuse>0.4 0.25 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="tree_obstacle_2">
+      <static>true</static>
+      <pose>-2.0 2.5 0.6 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><cylinder><radius>0.35</radius><length>1.2</length></cylinder></geometry></collision>
+        <visual name="visual"><geometry><cylinder><radius>0.35</radius><length>1.2</length></cylinder></geometry>
+          <material><ambient>0.4 0.25 0.1 1</ambient><diffuse>0.4 0.25 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="rock_obstacle">
+      <static>true</static>
+      <pose>2.0 -2.5 0.3 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>0.6 0.6 0.6</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>0.6 0.6 0.6</size></box></geometry>
+          <material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>
